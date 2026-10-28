@@ -14,6 +14,8 @@ Register SoT: `register/flow_AddOn_Competitive_Price_Scraping_Register.xlsx` (v0
 - **Camofox** is the lab/test path for parsers (S-050 / S-060 remain Confidence LOW — scaffold, not proof)
 - Registers are source of truth: CAPTURE / CARRY / CALC; no comment-only completion
 - Attestations are background-only (Pass + who + when on CTA)
+- Human-facing docs in this repo and Drive Context are **Markdown (.md)** only. Word (.doc/.docx) is not used. Excel (.xlsx) is for process registers only.
+- UI uses **V8.1 / v8.2 denim + Manrope tokens** from `register/g8tes_Design_Tokens.md`. Mist page, Cotton panels, Side=Raw, Tag `#B52A36` for one primary action per view. No copper / thread.
 
 ## First slice
 

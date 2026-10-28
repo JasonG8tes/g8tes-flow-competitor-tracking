@@ -183,7 +183,7 @@ export function S020CompetitionBase({
           </FieldShell>
         </div>
         <div className="actions">
-          <button className="btn" disabled={!writable} onClick={addRow}>
+          <button className="btn secondary" disabled={!writable} onClick={addRow}>
             Add row to base
           </button>
           <button className="btn ghost" disabled={!writable} onClick={seed}>

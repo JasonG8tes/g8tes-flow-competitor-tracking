@@ -64,7 +64,12 @@ export function S040LegalGate({
         </div>
       )}
 
-      {state.legalAssessments.map((row) => (
+      {state.legalAssessments.map((row, index) => {
+        const firstPending =
+          state.legalAssessments.findIndex(
+            (a) => a.legalAssessmentCompleteFlag !== "Pass",
+          ) === index;
+        return (
         <div className="panel" key={row.competitorCode}>
           <h3>
             {row.competitorCode}{" "}
@@ -140,7 +145,7 @@ export function S040LegalGate({
           </div>
           <div className="actions">
             <button
-              className="btn"
+              className={firstPending ? "btn" : "btn secondary"}
               disabled={!writable}
               onClick={() => {
                 setError(null);
@@ -155,7 +160,8 @@ export function S040LegalGate({
             </button>
           </div>
         </div>
-      ))}
+        );
+      })}
 
       {shownError && <Notice kind="error">{shownError}</Notice>}
       {user.role !== "LG" && (

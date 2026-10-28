@@ -16,6 +16,7 @@ import { CamofoxLab, LaterStep } from "./ui/steps/CamofoxLab";
 import { S010Acceptance } from "./ui/steps/S010Acceptance";
 import { S020CompetitionBase } from "./ui/steps/S020CompetitionBase";
 import { S040LegalGate } from "./ui/steps/S040LegalGate";
+import { readTheme, toggleTheme, type Theme } from "./ui/theme";
 
 function safeReduce(state: AppState, action: Action): AppState {
   return reduce(state, action);
@@ -24,6 +25,12 @@ function safeReduce(state: AppState, action: Action): AppState {
 export function App() {
   const [state, dispatch] = useReducer(safeReduce, undefined, hydrate);
   const [stepId, setStepId] = useState<StepId>("S-010");
+  const [theme, setTheme] = useState<Theme>(() =>
+    typeof document === "undefined"
+      ? "light"
+      : (document.documentElement.getAttribute("data-theme") as Theme) ||
+        readTheme(),
+  );
   const user = currentUser(state);
 
   useEffect(() => {
@@ -38,67 +45,82 @@ export function App() {
 
   return (
     <div className="app">
-      <header className="topbar">
-        <div>
+      <nav className="nav">
+        <div className="nav-brand">
           <p className="brand-kicker">flow add-on · not the flow spine</p>
           <h1 className="brand-title">Competitive Price Scraping</h1>
           <p className="brand-sub">
-            {state.clientName} · register {REGISTER_VERSION} · first slice S-010 then S-020
+            {state.clientName} · {REGISTER_VERSION}
           </p>
         </div>
-        <div className="top-meta">
-          <div className="pill-row">
-            <span className="pill warn">No LLM to client</span>
-            <span className="pill">Invented demo only</span>
-            <span className="pill lab">Camofox = lab path</span>
-            <span className="pill">S-040 gate closed</span>
-          </div>
-          <div className="who">
-            <span className="badge-role">{user.role}</span>
-            <select
-              className="user-select"
-              value={state.currentUserId}
-              onChange={(e) =>
-                guardedDispatch({ type: "switch-user", userId: e.target.value })
-              }
-            >
-              {DEMO_USERS.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.displayName} · {u.role}
-                </option>
-              ))}
-            </select>
+        <h2>Add-on steps</h2>
+        {STEPS.map((step) => {
+          const status = stepStatus(state, step.id);
+          return (
             <button
-              className="btn ghost"
-              style={{ color: "#f6f1e8", borderColor: "#5a6a7a" }}
-              onClick={() => guardedDispatch({ type: "reset-demo" })}
+              key={step.id}
+              className={`nav-btn${stepId === step.id ? " active" : ""}`}
+              onClick={() => setStepId(step.id)}
             >
-              Reset demo
+              <span className="nav-id">{step.id}</span>
+              <span className="nav-name">{step.name}</span>
+              <span className="nav-meta">
+                {step.phase} · <StatusMark status={status} />
+              </span>
             </button>
-          </div>
-        </div>
-      </header>
+          );
+        })}
+      </nav>
 
-      <div className="workspace">
-        <nav className="nav">
-          <h2>Add-on steps</h2>
-          {STEPS.map((step) => {
-            const status = stepStatus(state, step.id);
-            return (
-              <button
-                key={step.id}
-                className={`nav-btn${stepId === step.id ? " active" : ""}`}
-                onClick={() => setStepId(step.id)}
+      <div className="main-col">
+        <header className="topbar">
+          <div>
+            <p className="brand-kicker">first slice S-010 then S-020</p>
+            <h1 className="brand-title">Competitive Price Scraping</h1>
+            <p className="lede">
+              Client-side module. No LLM to client. Invented demo only.
+            </p>
+          </div>
+          <div className="top-meta">
+            <div className="pill-row">
+              <span className="pill">No LLM to client</span>
+              <span className="pill">Invented demo only</span>
+              <span className="pill">Camofox = lab path</span>
+              <span className="pill">S-040 gate closed</span>
+            </div>
+            <div className="who">
+              <span className="badge-role">{user.role}</span>
+              <select
+                className="user-select"
+                value={state.currentUserId}
+                onChange={(e) =>
+                  guardedDispatch({ type: "switch-user", userId: e.target.value })
+                }
               >
-                <span className="nav-id">{step.id}</span>
-                <span className="nav-name">{step.name}</span>
-                <span className="nav-meta">
-                  {step.phase} · <StatusMark status={status} />
-                </span>
+                {DEMO_USERS.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.displayName} · {u.role}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                className="btn ghost"
+                aria-label="Switch night and day"
+                onClick={() => setTheme(toggleTheme(theme))}
+              >
+                {theme === "light" ? "Night" : "Day"}
               </button>
-            );
-          })}
-        </nav>
+              <button
+                type="button"
+                className="btn ghost"
+                onClick={() => guardedDispatch({ type: "reset-demo" })}
+              >
+                Reset demo
+              </button>
+            </div>
+          </div>
+        </header>
 
         <main className="main">
           {stepId === "S-010" && (

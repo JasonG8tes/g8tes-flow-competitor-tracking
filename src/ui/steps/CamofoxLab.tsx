@@ -87,7 +87,7 @@ export function CamofoxLab({
           </Notice>
         ))}
         <div className="actions">
-          <button className="btn" disabled>
+          <button className="btn secondary" disabled>
             Start {channel} scrape (disabled)
           </button>
         </div>
